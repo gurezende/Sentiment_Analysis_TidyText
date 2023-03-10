@@ -4,9 +4,9 @@
 The project uses R Language to create a Shiny web application that reads a text and returns the word frequencies, Word Cloud and a graphic with sentiment analysis.
 Abilities developed:
 
- 1. Natural Language Processing
+ 1. Natural Language Processing - words frequency, word cloud, 
  2. Tidytext
- 3. Word Cloud
+ 3. Sentiment Analysis
  4. Creating web applications with Shiny Apps for R
 
 
