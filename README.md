@@ -1,4 +1,4 @@
-# | PROJECT 13
+# | PROJECT 2
 ## [Text Sentiment Analyzer](https://github.com/gurezende/Sentiment_Analysis_TidyText)
 
 The project uses R Language to create a Shiny web application that reads a text and returns the word frequencies and a graphic with sentiment analysis.
