@@ -13,6 +13,7 @@ library(tidyverse)
 library(textdata)
 library(tidytext)
 library(plotly)
+library(wordcloud2)
 
 #------------------------
 
@@ -42,6 +43,12 @@ text_freq_sentiment <- function(text, .sentiment='afinn'){
     unnest_tokens(input = text, #name of the input column
                   output = word) #name of the output column
   
+  freq_table <-  tokens %>% #dataset
+    anti_join(stop_words, by='word') %>% #join the sentiments
+    count(word, sort = TRUE)  #count the words by sentiment value
+    
+    
+  
   # If sentiment is AFINN
   if (.sentiment == 'afinn') {
     # Counting frequencies and joining sentiments
@@ -64,7 +71,7 @@ text_freq_sentiment <- function(text, .sentiment='afinn'){
       theme_light() )
     
     # Return
-    return(list(freq_count, g))
+    return(list(freq_table, freq_count, g))
   } #close if afinn
   
   
@@ -91,7 +98,7 @@ text_freq_sentiment <- function(text, .sentiment='afinn'){
         theme_light() )
     
     # Return
-    return(list(freq_count, g))
+    return(list(freq_table, freq_count, g))
   } #close if bing
   
   
@@ -116,7 +123,7 @@ text_freq_sentiment <- function(text, .sentiment='afinn'){
       theme_light() )
     
     # Return
-    return(list(freq_count, g))
+    return(list(freq_table, freq_count, g))
     
     
   } # close nrc
@@ -194,14 +201,16 @@ ui <- fluidPage(
                  span('--------------------------------------------------------------------------------------------------', style = "color:darkgray"),
                  br(),
                  # Results - Column 1, Sentiments table frequencies
-                 column(4,
-                        h4("| Sentiment Analysis"),
-                        h6("Frequency Table"),
+                 column(2,
+                        h5("| Words Frequency Table"),
                         h6( tableOutput('freq_table') ) ), #close column 1
                  # Results - Column 2, Sentiments graphic
-                 column(8, 
-                        h3( "Graphic" ),
-                        plotlyOutput(outputId = 'sentiments_plot') ), #close column2
+                 column(4, 
+                        h5( "| Word Cloud" ),
+                        wordcloud2Output(outputId = 'wordcloud') ), #close column2
+                 column(6, 
+                        h5( "| Sentiment Analysis Graphic" ),
+                        plotlyOutput(outputId = 'sentiments_plot') ), #close column3
                  br(),
                  br(),
                  helpText(em('Text Analyzer app by ', em('Gustavo R Santos')))
@@ -222,7 +231,9 @@ ui <- fluidPage(
 server <- function(input, output) {
   
 
-  # Piece of code for the Prediction
+  #----------------------------------------------
+  # Piece of code for the Table of Frequencies
+  #----------------------------------------------
   output$freq_table <- renderTable({ 
     # If there is no text, show an empty table
     if (input$text == " ") {input$text} 
@@ -231,12 +242,14 @@ server <- function(input, output) {
       # Prepare data for input in the model
       datatext <- text_freq_sentiment(input$text, .sentiment = input$sentiments)
       
-      data.frame(datatext[[1]])
+      data.frame(datatext[[1]]) %>% head(10)
     }#end if
     
   }) #output prediction
   
+  #----------------------------------------------
   # Piece of code for the Graphic
+  #----------------------------------------------
   output$sentiments_plot <- renderPlotly({
     # If there is no text, show a dummy graphic
     if (input$text == " ") {
@@ -250,13 +263,30 @@ server <- function(input, output) {
       datatext <- text_freq_sentiment(input$text, .sentiment = input$sentiments)
       
       # Create graphic
-      g <- datatext[[2]]
+      g <- datatext[[3]]
       plotly_build(g)
       
     }#end if
     
   }) #output bar graphic
   
+  
+  #----------------------------------------------
+  # Piece of code for the Wordcloud
+  #----------------------------------------------
+  output$wordcloud <- renderWordcloud2({
+    # Prepare data as a dataset
+    datatext <- text_freq_sentiment(input$text, .sentiment = input$sentiments)
+      
+    # Create graphic
+    word_cloud <- datatext[[1]]
+    wordcloud2(data= word_cloud, 
+               color="random-dark",
+               backgroundColor="black",
+               size=1.2)
+    
+    
+  }) #output bar graphic
   
   
 } #close server
