@@ -31,8 +31,7 @@ text_freq_sentiment <- function(text, .sentiment='afinn'){
   Graphic with sentiments
   Frequency table
   "
-  
-  # get sentiments
+  # Get Sentiments table
   sentiments <- get_sentiments(.sentiment)
   
   # Transform to tibble
@@ -149,7 +148,9 @@ ui <- fluidPage(
     tabPanel("About the Project",
              mainPanel(
                fluidRow(
+                 # Tab title
                  h2('Text Sentiment Analyzer Project'),
+                 # Texts - About the project
                  p('This project - created by ', strong(a("Gustavo R Santos", href="https://www.linkedin.com/in/gurezende/")),
                    '- to quickly create a text analysis to count word frequencies and plot the sentiments graphic.'),
                  p('There are three sentiment datasets available for the analysis that the user can choose'),
@@ -168,34 +169,42 @@ ui <- fluidPage(
     tabPanel("Text Analyzer",
              mainPanel(
                fluidRow(
+                 # Page Title 1
                  h3("| Instructions"),
+                 # Instructions to use the app
                  helpText("This app receives a text as input. Write down or paste a text in the input box,
                  select a dataset for sentiment classification, and press the button submit. 
                  The app will return the table with word frequencies and the sentiments graphic."),
+                 # Line break
                  br(),
+                 # Line division
                  span('--------------------------------------------------------------------------------------------------', style = "color:darkgray"),
+                 # Input text box title
                  h4("Input your text here:"),
                  #text Input
                  textAreaInput(inputId = "text", NULL, " ", width = "1000px", height="120px"),
+                 # Radio Button to select the sentiment dataset to be used
                  radioButtons(inputId = 'sentiments', 
                               label= 'Sentiments datasets',
                               choices= c('afinn', 'bing', 'nrc'), 
-                              inline = T, selected = 'afinn'),
+                              inline = T, selected = 'bing'),
+                 # Add submit Button
                  submitButton(text= 'Submit'),
                  br(),
                  span('--------------------------------------------------------------------------------------------------', style = "color:darkgray"),
                  br(),
+                 # Results - Column 1, Sentiments table frequencies
                  column(4,
                         h4("| Sentiment Analysis"),
                         h6("Frequency Table"),
                         h6( tableOutput('freq_table') ) ), #close column 1
+                 # Results - Column 2, Sentiments graphic
                  column(8, 
                         h3( "Graphic" ),
-                        plotlyOutput(outputId = 'sentiments_plot')
-                 ), #column2
+                        plotlyOutput(outputId = 'sentiments_plot') ), #close column2
                  br(),
                  br(),
-                 helpText(em('Text Analyzer app'))
+                 helpText(em('Text Analyzer app by ', em('Gustavo R Santos')))
                )# close fluidRow-TextAnalyzer
              ) #close mainPanel-TextAnalyzer
     ) #close tabPanel-TextAnalyzer
